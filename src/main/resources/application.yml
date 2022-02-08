@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    include: sub-db-table,dynamic-ds
+#    include: sub-table,dynamic-ds
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.mvp.world.mybatisplusdynamicsharding.model.po

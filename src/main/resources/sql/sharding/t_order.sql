@@ -1,0 +1,15 @@
+
+#### 分库分表
+## 订单表
+DROP TABLE IF EXISTS`t_order_0`;
+CREATE TABLE`t_order_0`(
+	`order_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT "自增id",
+	`user_id` bigint(20) NOT NULL DEFAULT 0 COMMENT "用户ID",
+	`price` decimal(10, 2) NOT NULL DEFAULT '0.0' COMMENT "价格",
+	`remark` varchar(160) NOT NULL DEFAULT '' COMMENT "备注",
+	`status_no` int(10) NOT NULL DEFAULT 0 COMMENT "状态 0有效 -1删除",
+	`created_time` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT "创建时间",
+	`updated_time` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT "更新时间",
+	PRIMARY KEY(`order_id`),
+	KEY(`user_id`)
+) ENGINE= InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT="订单表";

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mvp.world.mybatisplusdynamicsharding.dao.OrderDao" >
+  <resultMap id="BaseResultMap" type="com.mvp.world.mybatisplusdynamicsharding.model.po.OrderPo" >
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="status_no" property="statusNo" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    order_id, user_id, price, status_no, remark, created_time, updated_time
+  </sql>
+
+  <!-- 在查询的时候，如果指定分表键，那么只会查询分表键所在的分表 -->
+  <select id="getUserOrder" resultType="java.util.Map">
+        SELECT o.order_id, DATE_FORMAT(o.created_time,'%Y-%m-%d %H:%i:%s') created_time, u.user_name  FROM t_order o
+        LEFT JOIN t_user u on o.user_id=u.id where o.user_id=#{user_id} and o.order_id=#{order_id};
+  </select>
+
+<!-- 在查询的时候，如果不指定分表键，那么会以笛卡尔积的方式遍历所有分表 -->
+<!--  <select id="getUserOrder" resultType="java.util.Map">-->
+<!--        SELECT o.*,u.user_name  FROM t_user u-->
+<!--        LEFT JOIN t_order o on u.id=o.user_id where o.user_id=#{user_id};-->
+<!--  </select>-->
+
+
+  <insert id="insertOrders" parameterType="List">
+    insert into t_order(`order_id`, user_id, price, status_no, remark, created_time, updated_time)
+    VALUES
+    <foreach collection="orderInfos" item="orderInfo" index="index" separator=",">
+      (#{orderInfo.orderId}, #{orderInfo.userId}, #{orderInfo.price}, #{orderInfo.statusNo},  #{orderInfo.remark}, now(), now())
+    </foreach>
+  </insert>
+
+<!-- 在批量插入的时候，如果不指定分表键，那么会将数据插入到路由错误的表 -->
+<!--  <insert id="insertOrders" parameterType="List">-->
+<!--    insert into t_order(user_id, price, status_no, remark, created_time, updated_time)-->
+<!--    VALUES-->
+<!--    <foreach collection="orderInfos" item="orderInfo" index="index" separator=",">-->
+<!--      (#{orderInfo.userId}, #{orderInfo.price}, #{orderInfo.statusNo},  #{orderInfo.remark}, now(), now())-->
+<!--    </foreach>-->
+<!--  </insert>-->
+
+</mapper>
